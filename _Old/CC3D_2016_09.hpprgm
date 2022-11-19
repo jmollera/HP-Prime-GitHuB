@@ -1,0 +1,45 @@
+// Coordinate convertion in 3D
+// Rectangular - Cylindrical - Spherical
+// JMB - September 2016
+
+#pragma mode( separator(.,;) integer(h32) )
+
+EXPORT RecToCyl(rec)
+// [x,y,z] → [ρ,φ,z]
+BEGIN
+  LOCAL cyl:=polar_coordinates(rec(1),rec(2));
+  [cyl(1),cyl(2),rec(3)];
+END;
+
+EXPORT CylToRec(cyl)
+// [ρ,φ,z] → [x,y,z]
+BEGIN
+  LOCAL rec:=rectangular_coordinates(cyl(1),cyl(2));
+  [rec(1),rec(2),cyl(3)];
+END;
+  
+EXPORT SphToCyl(sph)
+// [r,θ,φ] → [ρ,φ,z]
+BEGIN
+  LOCAL cyl:=rectangular_coordinates(sph(1),sph(2));
+  [cyl(2),sph(3),cyl(1)];
+END;
+ 
+EXPORT CylToSph(cyl)
+// [ρ,φ,z] → [r,θ,φ]
+BEGIN
+  LOCAL sph:=polar_coordinates(cyl(3),cyl(1));
+  [sph(1),sph(2),cyl(2)];
+END; 
+  
+EXPORT RecToSph(rec)
+// [x,y,z] → [r,θ,φ]
+BEGIN
+  CylToSph(RecToCyl(rec));
+END;
+
+EXPORT SphToRec(sph)
+// [r,θ,φ] → [x,y,z]
+BEGIN
+  CylToRec(SphToCyl(sph));
+END;

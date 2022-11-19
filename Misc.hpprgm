@@ -1,0 +1,45 @@
+// JMB 2018-08
+#pragma mode( separator(.,;) integer(h32) )
+
+EXPORT Body_Surface_Area(w,h)
+// w:weight(kg), h:height(m) → body surface area (m²), using Boyd's formula
+BEGIN
+  RETURN ROUND(0.0003207*(h*100)^0.3*(w*1000)^(0.7285-0.0188*LOG(w*1000)),4);
+END;       
+
+EXPORT Body_Mass_Index(w,h)
+// w:weight(kg), h:height(m) → body mass index (kg/m²)
+BEGIN
+  LOCAL bmi := w/h^2;
+  LOCAL category;
+  CASE
+    IF bmi ≤ 15 THEN category := "Very severely underweight"; END;
+    IF 15 < bmi ≤ 16 THEN category := "Severely underweight"; END;
+    IF 16 < bmi ≤ 18.5 THEN category := "Underweight"; END;  
+    IF 18.5 < bmi ≤ 25 THEN category := "Normal (Healthy weight)"; END;
+    IF 25 < bmi ≤ 30 THEN category := "Overweight"; END;  
+    IF 30 < bmi ≤ 35 THEN category := "Obese Class I (Moderately obese)"; END;
+    IF 35 < bmi ≤ 40 THEN category := "Obese Class II (Severely obese)"; END;  
+    DEFAULT category := "Obese Class III (Very severely obese)";
+  END;
+  RETURN {ROUND(bmi,1),category};
+END;
+
+EXPORT IBAN(ccc)
+// ccc:account number (string) → IBAN
+BEGIN
+  LOCAL x;
+  IF TYPE(ccc) ≠ 2 THEN
+    RETURN "Error:String expected";
+  ELSE
+    x := CAS(EVAL("98-((1000000*"+ccc+"+142800) MOD 97)"));
+    RETURN "ES" + IFTE(x < 10, "0", "") + x;
+  END;
+END;
+
+EXPORT NIF(dni)
+// dni:DNI number → NIF control letter
+BEGIN
+  LOCAL s := "TRWAGMYFPDXBNJZSQVHLCKE";
+  RETURN CHAR(s(1+(dni MOD 23)));
+END;

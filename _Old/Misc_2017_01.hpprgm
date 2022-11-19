@@ -1,0 +1,24 @@
+// JMB 2017-01
+
+#pragma mode( separator(.,;) integer(h32) )
+
+EXPORT Body_Surface_Area(w,h)
+// w:weight(kg), h:height(cm) → body surface area (m²)
+BEGIN
+  0.0003207*h^0.3*(w*1000)^(0.7285-0.0188*LOG(w*1000));
+END;
+
+EXPORT Body_Mass_Index(w,h)
+// w:weight(kg), h:height(cm) → body mass index (kg/m²)
+BEGIN
+  w/(h/100)^2;
+END;
+
+#cas
+IBAN(ccc):=
+// ccc:account number → IBAN
+BEGIN
+  LOCAL x:=98-((1000000*ccc+142800) MOD 97);
+  "ES" + IFTE(x<10,"0","") + x;
+END;
+#end

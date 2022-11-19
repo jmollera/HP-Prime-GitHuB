@@ -1,0 +1,34 @@
+// JMB 2017-06
+
+#pragma mode( separator(.,;) integer(h32) )
+
+EXPORT Body_Surface_Area(w,h)
+// w:weight(kg), h:height(cm) → body surface area (m²)
+BEGIN
+  0.0003207*h^0.3*(w*1000)^(0.7285-0.0188*LOG(w*1000));
+END;
+
+EXPORT Body_Mass_Index(w,h)
+// w:weight(kg), h:height(cm) → body mass index (kg/m²)
+BEGIN
+  w/(h/100)^2;
+END;
+
+EXPORT IBAN(ccc)
+// ccc:account number (string) → IBAN
+BEGIN
+  LOCAL x;
+  IF TYPE(ccc)≠2 THEN
+    "Error:String expected";
+  ELSE
+    x:=CAS(EVAL("98-((1000000*"+ccc+"+142800) MOD 97)"));
+    RETURN "ES" + IFTE(x<10,"0","") + x;
+  END;
+END;
+
+EXPORT NIF(dni)
+// dni:DNI number → NIF control letter
+BEGIN
+  LOCAL s:="TRWAGMYFPDXBNJZSQVHLCKE";
+  RETURN CHAR(s(1+(dni MOD 23)));
+END;

@@ -1,0 +1,125 @@
+// JMB 2017-12
+
+#pragma mode( separator(.,;) integer(h32) )
+
+EXPORT Polynomial_Interpolation(data,x)
+// data:[[x1,y1], x:abscissa → interpolated ordinate y
+//       [x2,y2]
+//       .......
+//       [xn,yn]]  
+BEGIN
+  POLYEVAL(polynomial_regression(data,rowDim(data)-1),x);
+END;
+
+EXPORT Polynomial_Interpolation_2way(data,x,y)
+// data:[[0,   x1,  x2, ...  xn], x, y → interpolated z
+//       [y1, z11, z12, ... z1n]
+//       [y2, z21, z22, ... z2n]
+//       .......................
+//       [ym, zm1, zm2, ... zmn]]  
+BEGIN
+  LOCAL c:=colDim(data);
+  LOCAL r:=rowDim(data);
+  LOCAL d:=[[0,0],[0,0]];
+  LOCAL z:=[[0,0],[0,0]];
+  LOCAL k;
+  d(-1):=data({{1,2},{1,c}});
+  FOR k FROM 2 TO r DO
+    d(-2):=data({{k,2},{k,c}});
+    z(k-1,2):=Polynomial_Interpolation(d,x);
+  END;
+  z(-1):=TRN(data({{2,1},{r,1}}));
+  Polynomial_Interpolation(z,y);
+END;
+
+EXPORT ROUND_HMS(hms,n)
+// hms:number in HMS format → hms with seconds rounded to n decimal places
+BEGIN
+  →HMS(ROUND(HMS→(hms)*3600,n)/3600);
+END;
+
+EXPORT Rec_to_Cyl(rec)
+// rec:rectangular coordinates [x,y,z] → cylindrical coordinates [ρ,φ,z]
+BEGIN
+  LOCAL cyl:=polar_coordinates(rec(1),rec(2));
+  [cyl(1),cyl(2),rec(3)];
+END;
+
+EXPORT Cyl_to_Rec(cyl)
+// cyl:cylindrical coordinates [ρ,φ,z] → rectangular coordinates [x,y,z]
+BEGIN
+  LOCAL rec:=rectangular_coordinates(cyl(1),cyl(2));
+  [rec(1),rec(2),cyl(3)];
+END;
+  
+EXPORT Sph_to_Cyl(sph)
+// sph:spherical coordinates [r,θ,φ] → cylindrical coordinates [ρ,φ,z]
+BEGIN
+  LOCAL cyl:=rectangular_coordinates(sph(1),sph(2));
+  [cyl(2),sph(3),cyl(1)];
+END;
+ 
+EXPORT Cyl_to_Sph(cyl)
+// cyl:cylindrical coordinates [ρ,φ,z] → spherical coordinates [r,θ,φ]
+BEGIN
+  LOCAL sph:=polar_coordinates(cyl(3),cyl(1));
+  [sph(1),sph(2),cyl(2)];
+END; 
+  
+EXPORT Rec_to_Sph(rec)
+// rec:rectangular coordinates [x,y,z] → spherical coordinates [r,θ,φ]
+BEGIN
+  Cyl_to_Sph(Rec_to_Cyl(rec));
+END;
+
+EXPORT Sph_to_Rec(sph)
+// sph:spherical coordinates [r,θ,φ] → rectangular coordinates [x,y,z]
+BEGIN
+  Cyl_to_Rec(Sph_to_Cyl(sph));
+END;
+
+EXPORT Decimal_to_Roman(d)
+// d:decimal number (from 1 to 3999) → roman number (string)
+BEGIN
+  LOCAL rl:={"M","CM","D","CD","C","XC","L","XL","X","IX","V","IV","I"};
+  LOCAL dl:={1000,900,500,400,100,90,50,40,10,9,5,4,1};
+  LOCAL k,rn,dn;
+  IF d<1 OR d>3999 THEN
+    "Error:Invalid number";
+  ELSE
+    rn:="";
+    dn:=d;
+    FOR k FROM 1 TO 13 DO
+      WHILE dn≥dl(k) DO 
+        rn:=rn+rl(k);
+        dn:=dn-dl(k);
+      END;
+    END;
+    RETURN rn;
+  END;
+END;
+
+EXPORT Roman_to_Decimal(r)
+// r:roman number (string) → decimal number
+BEGIN
+  LOCAL dl:={1,5,10,50,100,500,1000};
+  LOCAL rl, k, rn, dn, cur, prev, sz;
+  IF TYPE(r)≠2 THEN
+    "Error:String expected";
+  ELSE
+    rn:=UPPER(r);
+    sz:=SIZE(rn);
+    rl:=MAKELIST(POS(ASC("IVXLCDM"),rn(k)),k,1,sz);
+    IF NOT ΠLIST(rl) THEN
+      "Error:Invalid number"; // non-roman characters
+    ELSE
+      dn:=0;
+      FOR k FROM 1 TO sz DO
+        cur:=dl(rl(k));
+        dn:=dn+IFTE(prev<cur, -prev, prev);
+        prev:=cur;
+      END;
+      RETURN dn+cur;
+    END;
+  END;
+END;

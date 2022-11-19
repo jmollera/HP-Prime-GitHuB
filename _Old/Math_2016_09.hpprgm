@@ -1,0 +1,52 @@
+// JMB - Setembre 2016
+
+#pragma mode( separator(.,;) integer(h32) )
+
+EXPORT Interpolació_Polinòmica(dades,x)
+// dades:[[x1,y1], x:abscissa → ordenada interpolada y
+//        [x2,y2]
+//        .......
+//        [xn,yn]]  
+BEGIN
+  POLYEVAL(polynomial_regression(dades,rowDim(dades)-1),x);
+END;
+
+EXPORT Rec→Cil(rec)
+// rec:coordenades rectangulars [x,y,z] → coordenades cilíndriques [ρ,φ,z]
+BEGIN
+  LOCAL cil:=polar_coordinates(rec(1),rec(2));
+  [cil(1),cil(2),rec(3)];
+END;
+
+EXPORT Cil→Rec(cil)
+// cil:coordenades cilíndriques [ρ,φ,z] → coordenades rectangulars [x,y,z]
+BEGIN
+  LOCAL rec:=rectangular_coordinates(cil(1),cil(2));
+  [rec(1),rec(2),cil(3)];
+END;
+  
+EXPORT Esf→Cil(esf)
+// esf:coordenades esfèriques [r,θ,φ] → coordenades cilíndriques [ρ,φ,z]
+BEGIN
+  LOCAL cil:=rectangular_coordinates(esf(1),esf(2));
+  [cil(2),esf(3),cil(1)];
+END;
+ 
+EXPORT Cil→Esf(cil)
+// cil:coordenades cilíndriques [ρ,φ,z] → coordenades esfèriques [r,θ,φ]
+BEGIN
+  LOCAL esf:=polar_coordinates(cil(3),cil(1));
+  [esf(1),esf(2),cil(2)];
+END; 
+  
+EXPORT Rec→Esf(rec)
+// rec:coordenades rectangulars [x,y,z] → coordenades esfèriques [r,θ,φ]
+BEGIN
+  Cil→Esf(Rec→Cil(rec));
+END;
+
+EXPORT Esf→Rec(esf)
+// esf:coordenades esfèriques [r,θ,φ] → coordenades rectangulars [x,y,z]
+BEGIN
+  Cil→Rec(Esf→Cil(esf));
+END;

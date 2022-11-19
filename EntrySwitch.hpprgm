@@ -1,0 +1,22 @@
+// JMB 2018-08
+#pragma mode( separator(.,;) integer(h32) )
+
+KEY K_On()
+BEGIN
+  IF Entry ≠ 2 THEN
+    Entry := 2; // RPN
+  ELSE
+    Entry := 0; // Textbook
+  END;
+  STARTVIEW(-1);
+END;
+
+KEY KA_Space()
+BEGIN
+  IF HFormat ≠ 3 THEN
+    HFormat := 3; // ENG
+  ELSE
+    HFormat := 0; // STD
+  END;
+  STARTVIEW(-1);
+END;

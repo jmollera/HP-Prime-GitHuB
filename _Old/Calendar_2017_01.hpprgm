@@ -1,0 +1,74 @@
+// JMB 2017-01
+// Valid dates are from 1582.1015 to 9999.1231
+
+#pragma mode( separator(.,;) integer(h32) )
+
+EXPORT Is_Date_Valid(d)
+// d:date → 1=valid date, 0=invalid date
+BEGIN
+  IFTE(d<1582.1015 OR d>9999.1231 OR DAYOFWEEK(d)<0, 0, 1);
+END;
+
+EXPORT Is_Leap_Year(d)
+// d:date or year → 1=leap year, 0=ordinary year
+BEGIN
+  DAYOFWEEK(IP(d)+0.0229) > 0;
+END;
+
+EXPORT Century(d)
+// d:date or year → century
+BEGIN
+  IP((d-1)/100)+1;
+END;
+
+EXPORT Year(d)
+// d:date → year
+BEGIN
+  IP(d);
+END;
+
+EXPORT Month(d)
+// d:date → month
+BEGIN
+  IP(FP(d)*100);
+END;
+
+EXPORT Day(d)
+// d:date → day
+BEGIN
+  FP(FP(d)*100)*100;
+END;
+
+EXPORT Date_to_Julian_Day(d)
+// d:date → julian day
+BEGIN
+  2299161+DDAYS(1582.1015,d);
+END;
+
+EXPORT Julian_Day_to_Date(jd)
+// jd:julian day → date
+BEGIN
+  DATEADD(1582.1015,jd-2299161);
+END;
+
+EXPORT Week_Number(d)
+// d:date → ISO 8601 week number
+BEGIN
+  LOCAL yr:=Year(d), mn:=Month(d), dy:=Day(d);
+  LOCAL DoW_0101:=IFTE(yr==1582,1,DAYOFWEEK(yr+0.0101));  
+  LOCAL DoW_Yp1_0101:=IFTE(yr==9999,6,DAYOFWEEK(yr+1.0101));
+  LOCAL wn:=IP((IFTE(yr==1582,Date_to_Julian_Day(d)-2298884,DDAYS(yr+0.0101,d))+DoW_0101-1)/7);
+  IF mn==12 AND DoW_Yp1_0101≤4 AND (32-dy)<DoW_Yp1_0101 THEN
+    RETURN 1;
+  ELSE
+    IF DoW_0101≤4 THEN
+      RETURN wn+1;
+    ELSE
+      IF mn==1 AND (9-dy)>DoW_0101 THEN
+        RETURN Week_Number(yr-1+0.1231);
+      ELSE
+        RETURN wn;
+      END;
+    END;
+  END;
+END;

@@ -1,0 +1,197 @@
+// JMB 2017-11
+// Valid dates are from 1582.1015 (Julian day 2299161) to 9999.1231 (Julian day 5373484)
+// Valid times must be entered in HMS format (for example: 15º23'44")
+// Global variables TimeZone and DaylightSavingTime must have correct values, for example: 
+// TimeZone:=3°30' (3.5 hours ahead of UTC), DaylightSavingTime:=1 (DST on) 
+
+#pragma mode( separator(.,;) integer(h32) )
+
+EXPORT Is_Date_Valid(d)
+// d:date → 1=valid date, 0=invalid date
+BEGIN
+  IFTE(d<1582.1015 OR d>9999.1231 OR DAYOFWEEK(d)<0, 0, 1);
+END;
+
+EXPORT Is_Leap_Year(d)
+// d:date or year → 1=leap year, 0=ordinary year
+BEGIN
+  DAYOFWEEK(IP(d)+0.0229) > 0;
+END;
+
+EXPORT Century(d)
+// d:date or year → century
+BEGIN
+  IP((d-1)/100)+1;
+END;
+
+EXPORT Year(d)
+// d:date → year
+BEGIN
+  IP(d);
+END;
+
+EXPORT Month(d)
+// d:date → month
+BEGIN
+  IP(FP(d)*100);
+END;
+
+EXPORT Day(d)
+// d:date → day
+BEGIN
+  FP(FP(d)*100)*100;
+END;
+
+EXPORT Date_to_Julian_Day(d)
+// d:date → Julian day
+BEGIN
+  2299161+DDAYS(1582.1015,d);
+END;
+
+EXPORT Julian_Day_to_Date(jd)
+// jd:Julian day → date
+BEGIN
+  DATEADD(1582.1015,jd-2299161);
+END;
+
+Convert_Date_Time(dt,s)
+// Auxiliary function for Local_to_UTC and UTC_to_Local
+BEGIN
+  LOCAL d:=dt(1), t:=dt(2);
+  t:=t+s*(TimeZone+DaylightSavingTime);
+  IF t < 0° THEN
+    d:=DATEADD(d,-1);
+    t:=t+24°;
+  END;
+  IF t ≥ 24° THEN
+    d:=DATEADD(d,1);
+    t:=t-24°;
+  END;
+  RETURN {d,t};
+END;
+
+EXPORT Local_to_UTC(dt)
+// dt:{local day, local time} → {UTC day, UTC time}
+BEGIN
+  Convert_Date_Time(dt,-1);
+END;
+
+EXPORT UTC_to_Local(dt)
+// dt:{UTC day, UTC time} → {local day, local time}
+BEGIN
+  Convert_Date_Time(dt,1);
+END;
+
+EXPORT UTC_to_Julian_Number(dt)
+// dt:{UTC day, UTC time} → Julian number
+BEGIN
+  Date_to_Julian_Day(dt(1)) - 0.5 + HMS→(dt(2))/24;
+END;
+
+EXPORT Local_to_Julian_Number(dt)
+// dt:{local day, local time} → Julian number
+BEGIN
+  UTC_to_Julian_Number(Local_to_UTC(dt));  
+END;  
+
+EXPORT Julian_Number_to_UTC(jn)
+// jn:Julian number → {UTC day, UTC time}
+BEGIN
+  LOCAL jd:=IP(jn), t:= FP(jn);
+  IF t ≥ 0.5 THEN
+    jd:=jd+1;
+    t:=→HMS((t-0.5)*24);
+  ELSE
+    t:=→HMS(t*24+12);
+  END;
+  RETURN {Julian_Day_to_Date(jd),t};
+END;  
+
+EXPORT Julian_Number_to_Local(jn)
+// jn:Julian number → {local day, local time}
+BEGIN
+  UTC_to_Local(Julian_Number_to_UTC(jn));
+END;  
+
+EXPORT Now
+// → {{now local date, now local time},
+//    {now UTC date, now UTC time},
+//    {now Julian number}}
+BEGIN
+  LOCAL d:=Date, t:=Time;
+  {{d,t},Local_to_UTC({d,t}),Local_to_Julian_Number({d,t})};
+END;
+
+EXPORT Now_Local
+// → {now local date, now local time}
+BEGIN
+  LOCAL n:=Now;
+  n(1);
+END;
+
+EXPORT Now_UTC
+// → {now UTC date, now UTC time}
+BEGIN
+  LOCAL n:=Now;
+  n(2);
+END;
+
+EXPORT Now_Julian_Number
+// → {now Julian number}
+BEGIN
+  LOCAL n:=Now;
+  n(3);
+END;
+
+EXPORT Week_Number(d)
+// d:date → week number (ISO 8601)
+BEGIN
+  LOCAL yr:=Year(d), mn:=Month(d), dy:=Day(d);
+  LOCAL DoW_0101:=IFTE(yr==1582,1,DAYOFWEEK(yr+0.0101));  
+  LOCAL DoW_Yp1_0101:=IFTE(yr==9999,6,DAYOFWEEK(yr+1.0101));
+  LOCAL wn:=IP((IFTE(yr==1582,Date_to_Julian_Day(d)-2298884,DDAYS(yr+0.0101,d))+DoW_0101-1)/7);
+  IF mn==12 AND DoW_Yp1_0101≤4 AND (32-dy)<DoW_Yp1_0101 THEN
+    RETURN 1;
+  ELSE
+    IF DoW_0101≤4 THEN
+      RETURN wn+1;
+    ELSE
+      IF mn==1 AND (9-dy)>DoW_0101 THEN
+        RETURN Week_Number(yr-1+0.1231);
+      ELSE
+        RETURN wn;
+      END;
+    END;
+  END;
+END;
+
+EXPORT Easter(y)
+// y:year → date of Easter Sunday
+BEGIN
+  LOCAL a,b,c,d,e,f,g;
+  LOCAL h,i,k,l,m,n;
+  CASE
+    IF y<1582 THEN
+      RETURN 0; 
+    END;
+    IF y==1582 THEN
+      RETURN 1582.0415;
+    END;
+    IF y > 1582 THEN
+      a:=irem(y,19);
+      b:=iquo(y,100);
+      c:=irem(y,100);
+      d:=iquo(b,4);
+      e:=irem(b,4);
+      f:=iquo(b+8,25);
+      g:=iquo(b-f+1,3);
+      h:=irem(19*a+b-d-g+15,30);
+      i:=iquo(c,4);
+      k:=irem(c,4);
+      l:=irem(32+2*e+2*i-h-k,7);
+      m:=iquo(a+11*h+22*l,451);
+      n:=h+l-7*m+114;
+      RETURN y + iquo(n,31)/100 + (irem(n,31)+1)/10000;
+    END;
+  END;
+END;
