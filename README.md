@@ -1,4 +1,4 @@
-# HP Prime
+# HP-Prime-GitHub
  HP Prime programs
  
  Tested in ROM 2.1.14592 (2021 06 09)
