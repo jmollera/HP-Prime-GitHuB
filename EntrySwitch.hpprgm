@@ -1,4 +1,4 @@
-// JMB 2018-08
+// JMB 2024-04
 #pragma mode( separator(.,;) integer(h32) )
 
 KEY K_On()
@@ -11,7 +11,7 @@ BEGIN
   STARTVIEW(-1);
 END;
 
-KEY KA_Space()
+KEY KA_Dot() // Alpha + Dot
 BEGIN
   IF HFormat ≠ 3 THEN
     HFormat := 3; // ENG
