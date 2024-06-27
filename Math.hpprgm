@@ -10,7 +10,7 @@ BEGIN
   RETURN POLYEVAL(polynomial_regression(data,rowDim(data)-1),x);
 END;
 
-EXPORT Polynomial_Interpolation_2way(data,x,y)
+EXPORT Polynomial_Interpolation_2D(data,x,y)
 // data:[[0,   x1,  x2, ...  xn], x, y → interpolated z
 //       [y1, z11, z12, ... z1n]
 //       [y2, z21, z22, ... z2n]
