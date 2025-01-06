@@ -190,7 +190,7 @@ BEGIN
     t := →HMS(t*24+12);
   END;
   RETURN {JDNumber_to_Date(jdn),ROUND(t,4)};
-END;  
+END;
 
 EXPORT Local_to_JD(dt)
 // dt:{Local date, Local time} → Julian Date
@@ -240,37 +240,37 @@ BEGIN
   RETURN UTC_to_Local(MJD_to_UTC(mjd));
 END;
 
-EXPORT Now
+EXPORT Now()
 // → {{Local date, Local time}, {UTC date, UTC time}, Julian Date, Modified Julian Date}
 BEGIN
   LOCAL d := Date, t := Time;
   RETURN {{d,t},Local_to_UTC({d,t}),Local_to_JD({d,t}),Local_to_MJD({d,t})};
 END;
 
-EXPORT Now_Local
+EXPORT Now_Local()
 // → {Local date, Local time}
 BEGIN
-  LOCAL n := Now;
+  LOCAL n := Now();
   RETURN n(1);
 END;
 
-EXPORT Now_UTC
+EXPORT Now_UTC()
 // → {UTC date, UTC time}
 BEGIN
-  LOCAL n := Now;
+  LOCAL n := Now();
   RETURN n(2);
 END;
 
-EXPORT Now_JD
+EXPORT Now_JD()
 // → Julian Date
 BEGIN
-  LOCAL n := Now;
+  LOCAL n := Now();
   RETURN n(3);
 END;
 
-EXPORT Now_MJD
+EXPORT Now_MJD()
 // → Modified Julian Date
 BEGIN
-  LOCAL n := Now;
+  LOCAL n := Now();
   RETURN n(4);
 END;
