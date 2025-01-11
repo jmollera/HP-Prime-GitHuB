@@ -1,11 +1,17 @@
 // JMB 2018-08
 #pragma mode( separator(.,;) integer(h32) )
 
-EXPORT Body_Surface_Area(w,h)
+EXPORT Body_Surface_Area_Boyd(w,h)
 // w:weight(kg), h:height(m) → body surface area (m²), using Boyd's formula
 BEGIN
   RETURN ROUND(0.0003207*(h*100)^0.3*(w*1000)^(0.7285-0.0188*LOG(w*1000)),4);
 END;       
+
+EXPORT Body_Surface_Area_Dubois(w,h)
+// w:weight(kg), h:height(m) → body surface area (m²), using Dubois's formula
+BEGIN
+  RETURN ROUND(0.007184*(h*100)^0.7253*w^0.425,4);
+END;  
 
 EXPORT Body_Mass_Index(w,h)
 // w:weight(kg), h:height(m) → body mass index (kg/m²)
