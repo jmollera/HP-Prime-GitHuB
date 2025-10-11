@@ -1,4 +1,4 @@
-// JMB 2018-08
+// JMB 2025-10
 #pragma mode( separator(.,;) integer(h32) )
 
 EXPORT Polynomial_Interpolation(data,x)
