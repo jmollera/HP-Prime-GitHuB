@@ -52,8 +52,8 @@ BEGIN
   LOCAL k, a, b;
   LOCAL n := SIZE(y);
   LOCAL N := n-1;
-  IF N<2 OR (N MOD 2)<>0  THEN 
-    RETURN "Error: Number of intervals must be odd, and at least 2";
+  IF N < 2 OR (N MOD 2) ≠ 0  THEN 
+    RETURN "Error: Number of intervals must be even, and at least 2";
   END;
   b := 0;
   FOR k FROM 2 TO n-1 STEP 2 DO
@@ -74,7 +74,7 @@ BEGIN
   LOCAL k, a, b;
   LOCAL n := SIZE(y);
   LOCAL N := n-1;
-  IF N<3 OR (N MOD 3)<>0 THEN 
+  IF N < 3 OR (N MOD 3) ≠ 0 THEN 
     RETURN "Error: Number of intervals must be multiple of 3, and at least 3";
   END;
   b := 0;
