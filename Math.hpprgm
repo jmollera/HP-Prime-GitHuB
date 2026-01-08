@@ -28,17 +28,17 @@ BEGIN
     b(k-1,2) := Polynomial_Interpolation(a,x); // interpolate for each row at x
   END;
   b(-1) := TRN(data({{2,1},{r,1}})); // 1st column of b = (y1,y2,...,ym)
-  RETURN Polynomial_Interpolation(b,y); // Interpolate at y
+  RETURN Polynomial_Interpolation(b,y); // interpolate at y
 END;
 
 EXPORT Trapezoidal_Rule(data)
-// data:[[x1,y1] → Integral from x1 to xn
+// data:[[x1,y1] → integral from x1 to xn
 //       [x2,y2]
 //       .......
 //       [xn,yn]]  
 BEGIN
   LOCAL k;
-  LOCAL n := rowDim(data); // Number of points
+  LOCAL n := rowDim(data); // number of points
   LOCAL total := data(1,2)*(data(2,1)-data(1,1))+data(n,2)*(data(n,1)-data(n-1,1));
   FOR k FROM 2 TO n-1 DO
     total := total+data(k,2)*(data(k+1,1)-data(k-1,1));
@@ -47,11 +47,11 @@ BEGIN
 END;
 
 EXPORT Simpson_1_3_Rule(y, h)
-// y:{y1,y2, ... yn}, h:abscissa step → Integral
+// y:{y1,y2, ... yn}, h:abscissa step → integral
 BEGIN
   LOCAL k, total, partial;
-  LOCAL n := SIZE(y); // Number of points
-  LOCAL N := n-1;     // Number of intervals
+  LOCAL n := SIZE(y); // number of points
+  LOCAL N := n-1;     // number of intervals
   IF N < 2 OR (N MOD 2) ≠ 0  THEN 
     RETURN "Error: Number of intervals must be even, and at least 2";
   END;
@@ -69,11 +69,11 @@ BEGIN
 END;
 
 EXPORT Simpson_3_8_Rule(y, h)
-// y:{y1,y2, ... yn}, h:abscissa step → Integral
+// y:{y1,y2, ... yn}, h:abscissa step → integral
 BEGIN
   LOCAL k, total, partial;
-  LOCAL n := SIZE(y); // Number of points
-  LOCAL N := n-1;     // Number of intervals
+  LOCAL n := SIZE(y); // number of points
+  LOCAL N := n-1;     // number of intervals
   IF N < 3 OR (N MOD 3) ≠ 0 THEN 
     RETURN "Error: Number of intervals must be multiple of 3, and at least 3";
   END;
