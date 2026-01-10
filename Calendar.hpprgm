@@ -1,41 +1,42 @@
-// JMB 2025-01
+// JMB 2026-01
 
 // Valid dates must be entered in YYYY.MMDD format, in the range 1582.1015 to 9999.1231
 // Valid times must be entered in HMS format. For example: 15°23'44" (15 h 23 min 44 s)
-// 1 January 4713 BCE at 12:00 UTC is Julian Date 0.0
-// 17 November 1858 CE at 00:00 UTC is Modified Julian Date 0.0 
+// 1 January 4713 BCE at 12:00:00 UTC is Julian Date 0.0
+// 17 November 1858 CE at 00:00:00 UTC is Modified Julian Date 0.0 
 // The user must set up two variables: TimeZone and DaylightSavingTime.
 // For example: TimeZone:=5°30' (UTC + 5.5 hours), DaylightSavingTime:=1 (1=DST on, 0=DST off) 
 
 #pragma mode( separator(.,;) integer(h32) )
 
-Date_to_JDNumber(d) //Auxiliary function
+Date_to_JDNumber(d) // auxiliary function
 // d:date → Julian Day Number
 BEGIN
   RETURN 2299161+DDAYS(1582.1015,d);
 END;
 
-JDNumber_to_Date(jdn) //Auxiliary function
+JDNumber_to_Date(jdn) // auxiliary function
 // jdn:Julian Day Number → date
 BEGIN
   RETURN DATEADD(1582.1015,jdn-2299161);
 END;
 
-Date_to_MJDNumber(d) //Auxiliary function
+Date_to_MJDNumber(d) // auxiliary function
 // d:date → Modified Julian Day Number
 BEGIN
   RETURN DDAYS(1858.1117,d);
 END;
 
-MJDNumber_to_Date(mjdn) //Auxiliary function
+MJDNumber_to_Date(mjdn) // auxiliary function
 // mjdn:Modified Julian Day Number → date
 BEGIN
   RETURN DATEADD(1858.1117,mjdn);
 END;
- 
-Convert_Date_Time(dt,s) //Auxiliary function
+
+Convert_Date_Time(dt,s) // auxiliary function
 // dt:{Local/UTC date, Local/UTC time}, s:-1/+1 → {UTC/Local date, UTC/Local time}
-// Local to UTC: s = -1, UTC to Local: s = 1 
+// Set s = -1 for Local to UTC conversion
+// Set s = 1  for UTC to Local conversion
 BEGIN
   LOCAL d := dt(1);
   LOCAL t := dt(2)+s*(TimeZone+DaylightSavingTime);
@@ -59,6 +60,7 @@ END;
 EXPORT Is_Leap_Year(d)
 // d:date or year → 1=leap year, 0=ordinary year
 BEGIN
+  // check if 29 February exists in that year
   RETURN DAYOFWEEK(IP(d)+0.0229) > 0;
 END;
 
@@ -183,7 +185,7 @@ EXPORT JD_to_UTC(jd)
 // jd:Julian Date → {UTC date, UTC time}
 BEGIN
   LOCAL jdn := IP(jd), t := FP(jd);
-  IF t ≥ 0.5 THEN
+  IF t ≥ 0.5 THEN 
     jdn := jdn+1;
     t := →HMS((t-0.5)*24);
   ELSE

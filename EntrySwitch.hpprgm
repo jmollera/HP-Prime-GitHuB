@@ -1,7 +1,8 @@
-// JMB 2024-04
+// JMB 2026-01
 #pragma mode( separator(.,;) integer(h32) )
 
 KEY K_On()
+// On key: Toggle Entry mode between Textbook and RPN
 BEGIN
   IF Entry ≠ 2 THEN
     Entry := 2; // RPN
@@ -11,7 +12,8 @@ BEGIN
   STARTVIEW(-1);
 END;
 
-KEY KA_Dot() // Alpha + Dot
+KEY KA_Dot()
+// Alpha+Dot keys: Toggle display format between ENG and STD
 BEGIN
   IF HFormat ≠ 3 THEN
     HFormat := 3; // ENG

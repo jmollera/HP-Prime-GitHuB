@@ -1,4 +1,4 @@
-// JMB 2018-08
+// JMB 2026-01
 #pragma mode( separator(.,;) integer(h32) )
 
 EXPORT Z_Series(z)
@@ -35,7 +35,7 @@ BEGIN
 END;
 
 EXPORT EZS_U(E,Z,S)
-// E:voltage source, Z:impedance, S:load power → load voltage U
+// E:voltage source, Z:line impedance, S:load power → load voltage U
 BEGIN
   LOCAL ZcS := CONJ(Z)*S;
   LOCAL ImUe := IM(ZcS)/ABS(E);
@@ -61,14 +61,14 @@ END;
 
 EXPORT AWG_to_mm2(AWG)
 // AWG:AWG number → area in mm²
-// 0, -1, -2 and -3 must be entered for AWG numbers 1/0, 2/0, 3/0 and 4/0
+// AWG 1/0, 2/0, 3/0 and 4/0 must be entered as 0, -1, -2 and -3
 BEGIN
   RETURN 53.4751207321/(92^(AWG/19.5));
 END;
 
 EXPORT mm2_to_AWG(mm2)
 // mm2:area in mm² → nearest AWG number
-// results 0, -1, -2 and -3 are equivalent to AWG numbers 1/0, 2/0, 3/0 and 4/0
+// results 0, -1, -2 and -3 are equivalent to AWG 1/0, 2/0, 3/0 and 4/0
 BEGIN
   RETURN ROUND(4.31245284200*LN(53.4751207321/mm2),0);
 END;
