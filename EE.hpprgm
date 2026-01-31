@@ -78,7 +78,7 @@ EXPORT Triangle_to_Phasors(u)
 // voltage Uab is taken as the reference phasor (angle equal to zero)
 BEGIN
   LOCAL φ := Triangle_Solver.SSS(u(1),u(3),u(2));
-  RETURN {u(1),u(2)*(-1,0)*(1,∡φ(2)),u(3)*(-1,0)/(1,∡φ(3))};
+  RETURN {u(1),-u(2)*(1,∡φ(2)),-u(3)/(1,∡φ(3))};
 END;
 
 EXPORT LN_to_LL(u)
