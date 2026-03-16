@@ -107,7 +107,7 @@ BEGIN
     RETURN DDAYS(1582.1015,d)+278;
   ELSE
     RETURN DDAYS(IP(d)+0.0101,d)+1;
-  END
+  END;
 END;
 
 EXPORT Week_Number(d)
